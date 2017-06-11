@@ -1,6 +1,3 @@
-" JKODRUM SECTION START
-" DO NOT EDIT THIS SECTION
-"
 " {***** Basic Setting *****
 " :set all		" see current setting
 " :so %<cr>		" reload current file.
@@ -134,4 +131,3 @@ vnoremap // y/<c-r>"<cr>
 " {***** ColorScheme *****
 colorscheme wombat256
 " }***** ColorScheme *****
-" JKODRUM SECTION END
