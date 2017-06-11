@@ -8,6 +8,7 @@
 # -a: install powerline and vimrc globally (system wide)
 # -u: uninstall powerline and vimrc
 
+
 red=`tput setaf 1`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
@@ -22,6 +23,8 @@ echoBlue() { echo "${blue}$*${reset}"; }
 echoMagenta() { echo "${magenta}$*${reset}"; }
 echoCyan() { echo "${cyan}$*${reset}"; }
 
+JKOVIM_DIR="$( cd -P $( dirname $0 ) && pwd -P )"
+
 # TODO: global install
 # TODO: en/diable powerline
 start() {
@@ -33,10 +36,12 @@ start() {
             LOCAL_OR_GLOBAL="GLOBAL"
             ;;
         "-u")
-            echo "Uninstall"
+            echoRed "Uninstall"
             platform
-            localUninstallPowerline
+            #localUninstallPowerline
             uninstallVimrc
+            uninstallFont
+            #unconfShellRC
             echoRed "* * * * * * * * Please restart terminal. * * * * * * * *"
             echo ""
             ;;
@@ -44,7 +49,7 @@ start() {
             platform
             installPowerline
             installVimrc
-            #uninstallVimrc
+            installFonts
             ;;
         *)
             echoYellow "default install: per user"
@@ -79,6 +84,7 @@ platform() {
             fi
             ;;
         "Linux")
+            ESSENTIAL="git vim curl fontconfig"
             INSTALL_CMD="sudo apt-get install -y"
             SED_CMD_PREFIX="sed -i"
             GLOBAL_VIMRC="/etc/vim/vimrc.local"
@@ -95,6 +101,10 @@ platform() {
                 BASHRC="$HOME/.bashrc"
                 POWERLINE_PATH="$HOME/.local/lib/python2.7/site-packages/powerline/bindings"
                 POWERLINE_BIN="$HOME/.local/bin"
+                FONT_PATH="$HOME/.font"
+                FONT_FILE="$HOME/.font/PowerlineSymbols.otf"
+                FONT_CONFIG_PATH="$HOME/.config/fontconfig/conf.d"
+                FONT_CONFIG_FILE="$HOME/.config/fontconfig/conf.d/10-powerline-symbols.conf"
             fi
             ;;
         "FreeBSD")
@@ -174,7 +184,7 @@ installVimrc() {
     else
         echo "\" JKODRUM SECTION START `date +%Y%m%d\ %a.`" >> $VIMRC
         echo "\" DO NOT EDIT THIS SECTION" >> $VIMRC
-        cat .vimrc >> $VIMRC
+        cat $JKOVIM_DIR/.vimrc >> $VIMRC
         echo -e "\n\n\" {***** Powerline *****" >> $VIMRC
         echo "set rtp+=$POWERLINE_PATH/vim/" >> $VIMRC
         echo "\" }***** Powerline *****" >> $VIMRC
@@ -192,7 +202,7 @@ installNeoBundle() {
     BUNDLE_DIR=~/.vim/bundle
     INSTALL_DIR="$BUNDLE_DIR/neobundle.vim"
     if [ -e "$INSTALL_DIR" ]; then
-        echoGreen "[NeoBundle]: Checked!"
+        echoGreen "[NeoBundle]: Checked."
     else
         echoYellow "[NeoBundle]: Installing..."
         git clone https://github.com/Shougo/neobundle.vim "$INSTALL_DIR"
@@ -201,7 +211,7 @@ installNeoBundle() {
 
 uninstallVimrc() {
     $SED_CMD_PREFIX '/JKODRUM/,/JKODRUM/d' $VIMRC
-    echoRed "[$VIMRC]: Unconfigured."
+    echoRed "[$VIMRC]: Unconfigured!"
 }
 
 localUninstallPowerline() {
@@ -212,21 +222,23 @@ localUninstallPowerline() {
     unconfShellRC
 }
 
-
 unconfShellRC() {
-    #echo "unconfShellRC"
-    sed -i '' '/JKODRUM/,/JKODRUM/d' $LOCAL_BASHRC
-    echo "bashrcConf: Unconfigured."
+    $SED_CMD_PREFIX '/JKODRUM/,/JKODRUM/d' $BASHRC
+    echoRed "[$BASHRC]: Unconfigured!"
 }
 
+# TODO: check curl
 installFonts() {
-    if [ ! -f "$FONT_FILE" ]; then
-        type wget >/dev/null 2>&1 && echo "wget: Checked."
-        if [ $OS == "Darwin" ]; then
-            type wget >/dev/null 2>&1 \
-                || (echo "wget: Installing..." && brew install wget)
+    FONT_OTF_URL="https://github.com/Lokaltog/powerline/raw/develop/font/PowerlineSymbols.otf"
+    FONT_CONF_URL="https://raw.githubusercontent.com/powerline/powerline/develop/font/10-powerline-symbols.conf"
 
-            echo "font: Downloading..."  && wget https://github.com/powerline/fonts/raw/master/DejaVuSansMono/DejaVu%20Sans%20Mono%20for%20Powerline.ttf -O $FONT_FILE >/dev/null 2>&1
+    if [ -f "$FONT_FILE" ]; then
+        echoGreen "[font]: Checked."
+    else
+        echoYellow "[font]: Installing..."
+        if [ $OS == "Darwin" ]; then
+            FONT_TTF_URL="https://github.com/powerline/fonts/raw/master/DejaVuSansMono/DejaVu%20Sans%20Mono%20for%20Powerline.ttf"
+            curl $FONT_TTF_URL > $FONT_FILE
             echo "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"
             echo "* Please install powerline font manually.                         *"
             echo "* Double click \"DejaVu_Sans_Mono.ttf\" on Desktop to install.      *"
@@ -234,23 +246,17 @@ installFonts() {
             echo "* For more fonts, https://github.com/powerline/fonts              *"
             echo "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"
         elif [ $OS == "GNU/Linux" ]; then
-            wget https://github.com/Lokaltog/powerline/raw/develop/font/PowerlineSymbols.otf https://github.com/Lokaltog/powerline/raw/develop/font/10-powerline-symbols.conf
-            mkdir -p ~/.fonts/ && mv PowerlineSymbols.otf ~/.fonts/
-            fc-cache -vf ~/.fonts
-            mkdir -p ~/.config/fontconfig/conf.d/ && mv 10-powerline-symbols.conf ~/.config/fontconfig/conf.d/
+            mkdir -p $FONT_PATH && curl $FONT_OTF_URL > $FONT_FILE
+            mkdir -p $FONT_CONFIG_PATH && curl $FONT_CONF_URL > $FONT_CONFIG_FILE
+            fc-cache --force $FONT_PATH
         fi
     fi
 }
 
-requireSudo() {
-    echo "Require sudo"
-    sudo echo "hello" >/dev/null
+uninstallFont() {
+    [ -f $FONT_FILE ] && rm $FONT_FILE
+    [ -f $FONT_CONFIG_FILE ] && rm $FONT_CONFIG_FILE
+    echoRed "[font]: Uninstall!"
 }
 
 start $*
-# installNeoBundle
-
-# echo "Operating System: `platform`"
-# checkVim
-
-# sed -i '' '/jKodrum/,/jKodrum/d' $vimrc
