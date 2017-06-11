@@ -47,9 +47,14 @@ start() {
             ;;
         "-t")
             platform
-            installPowerline
-            installVimrc
-            installFonts
+            #installPowerline
+            #installVimrc
+            #installFonts
+            confShellRC
+            ;;
+        "-y")
+            platform
+            unconfShellRC
             ;;
         *)
             echoYellow "default install: per user"
@@ -125,11 +130,11 @@ installPowerline() {
     type pip >/dev/null 2>&1 && echoGreen "[pip]: Checked."
     type pip >/dev/null 2>&1 \
         || (echoYellow "[pip]: Installing..." && $INSTALL_CMD python-pip)
-    err=$((pip list >/dev/null) 2>&1)
-    # if $err contains "upgrade"
-    if [ "${err#*upgrade}" != "$err" ]; then
-        echoYellow "[pip]: Upgrading..." && pip install --upgrade pip >/dev/null 2>&1;
-    fi
+    #err=$((pip list >/dev/null) 2>&1)
+    ## if $err contains "upgrade"
+    #if [ "${err#*upgrade}" != "$err" ]; then
+    #    echoYellow "[pip]: Upgrading..." && pip install --upgrade pip >/dev/null 2>&1;
+    #fi
 
     # install powerline
     pip show -f powerline-status | grep powerline >/dev/null
@@ -144,35 +149,21 @@ installPowerline() {
     confShellRC
 }
 
-localInstallPowerline() {
-    type pip >/dev/null 2>&1 && echo "pip: Checked."
-    type pip >/dev/null 2>&1 \
-        || (echo "pip: Installing..." && brew install python)
-    err=$((pip list >/dev/null) 2>&1)
-    # if $err contains "upgrade"
-    if [ "${err#*upgrade}" != "$err" ]; then
-        echo "pip: Upgrading..." && pip install --upgrade pip >/dev/null 2>&1;
-    fi
-
-    pip show -f powerline-status >/dev/null 2>&1 && echo "powerline: Checked."
-    pip show -f powerline-status >/dev/null 2>&1 \
-        || (echo "powerline: Installing..." && pip install --user powerline-status >/dev/null 2>&1)
-
-    confShellRC
-}
-
 confShellRC() {
     # Bash
-    powerlineConf="# JKODRUM POWERLINE SECTION START
-export PATH=\"$LOCAL_POWERLINE_BIN:\$PATH\"
-if [ -f $LOCAL_POWERLINE_PATH/bash/powerline.sh ]; then
-    source $LOCAL_POWERLINE_PATH/bash/powerline.sh
-fi
-# JKODRUM SECTION END"
-    grep "JKODRUM SECTION" $LOCAL_BASHRC >/dev/null \
-        && echoBlue "[$LOCAL_BASHRC]: Been configured before."
-    grep "JKODRUM SECTION" $LOCAL_BASHRC >/dev/null \
-        || (echo "$powerlineConf" >> $LOCAL_BASHRC && echoGreen "[$LOCAL_OR_GLOBAL]: Configured.")
+    powerlineConf="# JKODRUM POWERLINE SECTION START\n"
+    powerlineConf+="export PATH=\"$POWERLINE_BIN:\$PATH\"\n"
+    powerlineConf+="if [ -f $POWERLINE_PATH/bash/powerline.sh ]; then\n"
+    powerlineConf+="\tsource $POWERLINE_PATH/bash/powerline.sh\n"
+    powerlineConf+="fi\n"
+    powerlineConf+="# JKODRUM SECTION END"
+    if $(grep --quiet "JKODRUM SECTION" $BASHRC); then
+        echoBlue "[$BASHRC]: Been configured before."
+    else
+        powerlineConf=$(echo $powerlineConf | sed "s|$HOME|\$HOME|g")
+        echo -e "$powerlineConf" >> $BASHRC
+        echoGreen "[$BASHRC]: Configured."
+    fi
 }
 
 # TODO: powerline for vim
