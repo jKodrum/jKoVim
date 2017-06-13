@@ -36,12 +36,17 @@ start() {
             LOCAL_OR_GLOBAL="GLOBAL"
             ;;
         "-t")
+            echoGreen "Install test"
             platform
+            installPowerline
+            confShellRC
             installVimrc
+            installNeoBundle
             ;;
         "-y")
+            echoRed "Uninstall test"
             platform
-            uninstallVimrc
+            uninstallFont
             ;;
         "-u")
             echoRed "Uninstall"
@@ -61,6 +66,7 @@ start() {
             LOCAL_OR_GLOBAL="LOCAL"
             platform
             installPowerline
+            confShellRC
             installVimrc
             installNeoBundle
             installFonts
@@ -75,11 +81,8 @@ platform() {
         "Darwin")
             INSTALL_CMD="brew install"
             SED_CMD_PREFIX="sed -i ''"
-            GLOBAL_VIMRC="/usr/share/vim/vimrc"
-            LOCAL_BASHRC="$HOME/.bash_profile"
-            LOCAL_POWERLINE_PATH="$HOME/Library/Python/2.7/lib/python/site-packages/powerline/bindings"
-            LOCAL_POWERLINE_BIN="$HOME/Library/Python/2.7/bin"
             FONT_FILE="$HOME/Desktop/DejaVu_Sans_Mono.ttf"
+            FONT_FILE="$HOME/Library/Fonts/DejaVu\ Sans\ Mono\ for\ Powerline.ttf"
             if [ $LOCAL_OR_GLOBAL == "GLOBAL" ]; then
                 VIMRC="/usr/share/vim/vimrc"
             elif [ $LOCAL_OR_GLOBAL == "LOCAL" ]; then
@@ -93,12 +96,7 @@ platform() {
             ESSENTIAL="git vim curl fontconfig"
             INSTALL_CMD="sudo apt-get install -y"
             SED_CMD_PREFIX="sed -i"
-            GLOBAL_VIMRC="/etc/vim/vimrc.local"
             OS=`uname -o`
-            LOCAL_BASHRC="$HOME/.bashrc"
-            LOCAL_POWERLINE_PATH="$HOME/.local/lib/python2.7/site-packages/powerline/bindings"
-            LOCAL_POWERLINE_BIN="$HOME/.local/bin"
-            GLOBAL_POWERLINE_PATH="/usr/local/lib/python2.7/dist-packages/powerline/bindings/"
             if [ $LOCAL_OR_GLOBAL == "GLOBAL" ]; then
                 VIMRC="/etc/vim/vimrc.local"
                 POWERLINE_PATH="/usr/local/lib/python2.7/dist-packages/powerline/bindings/"
@@ -145,14 +143,19 @@ installPowerline() {
     else
         echoYellow "[powerline]: Installing..."
         pip install --user powerline-status
+        POWERLINE_CONFIG_FILE="$POWERLINE_PATH/../config_files/config.json"
+        #SUBTITUTE_PATTERN='/shell/,/}/s/"theme": "default"/"theme": "default_leftonly"/'
+        #SUBTITUTE_PATTERN="'/shell/,/}/s/\"theme\": \"default\"/\"theme\": \"default_leftonly\"/'"
+        #$SED_CMD_PREFIX `echo $SUBTITUTE_PATTERN` $POWERLINE_CONFIG_FILE
+        $SED_CMD_PREFIX '/shell/,/}/s/"theme": "default"/"theme": "default_leftonly"/' $POWERLINE_CONFIG_FILE
+        echoGreen "[powerline/config.json]: Modified."
     fi
-
-    confShellRC
 }
 
 confShellRC() {
     # Bash
-    powerlineConf="# JKODRUM POWERLINE SECTION START\n"
+    powerlineConf="# JKODRUM POWERLINE SECTION START `date +%Y%m%d\ %a.`\n"
+    powerlineConf+="# DO NOT EDIT THIS SECTION\n"
     powerlineConf+="export PATH=\"$POWERLINE_BIN:\$PATH\"\n"
     powerlineConf+="if [ -f $POWERLINE_PATH/bash/powerline.sh ]; then\n"
     powerlineConf+="\tsource $POWERLINE_PATH/bash/powerline.sh\n"
@@ -218,7 +221,7 @@ uninstallPowerline() {
     type pip >/dev/null 2>&1 \
     && (pip show -f powerline-status >/dev/null 2>&1 \
       && pip uninstall powerline-status -y >/dev/null 2>&1) \
-    && echoRed "powerline: Uninstalled."
+    && echoRed "[powerline]: Uninstalled."
     unconfShellRC
 }
 
@@ -254,8 +257,10 @@ installFonts() {
 }
 
 uninstallFont() {
-    [ -f $FONT_FILE ] && rm $FONT_FILE
-    [ -f $FONT_CONFIG_FILE ] && rm $FONT_CONFIG_FILE
+    [ -f "$FONT_FILE" ] && rm "$FONT_FILE"
+    if [ $OS == "GNU/Linux" ]; then
+        [ -f $FONT_CONFIG_FILE ] && rm $FONT_CONFIG_FILE
+    fi
     echoRed "[font]: Uninstall!"
 }
 
