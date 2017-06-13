@@ -114,7 +114,12 @@ nnoremap <C-P> :cprev<cr>
 nnoremap <C-N> :cnext<cr>
 nnoremap [q :cfirst<cr>
 nnoremap ]q :clast<cr>
+" CTRL-SLASH is registered as <c-_>
+nnoremap <c-_> *:vim /<c-r>// ##<cr>
 vnoremap // y/<c-r>"<cr>
+vnoremap /. y/\<<c-r>"\><cr>:vim /\<<c-r>\>/ ##<cr>
+vnoremap /, y/<c-r>"<cr>:vim /<c-r> /##<cr>
+cnoremap <c-_> args `find . -type f -not -path './.*/*' -name '*'   
 " Commands Notes
 " :tabo<cr>         " tabe only
 " :tabc<cr>         " tabe close
