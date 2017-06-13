@@ -35,33 +35,34 @@ start() {
             echo "install globally"
             LOCAL_OR_GLOBAL="GLOBAL"
             ;;
-        "-u")
-            echoRed "Uninstall"
-            platform
-            #localUninstallPowerline
-            uninstallVimrc
-            uninstallFont
-            #unconfShellRC
-            echoRed "* * * * * * * * Please restart terminal. * * * * * * * *"
-            echo ""
-            ;;
         "-t")
             platform
-            #installPowerline
-            #installVimrc
-            #installFonts
-            confShellRC
+            installVimrc
             ;;
         "-y")
             platform
+            uninstallVimrc
+            ;;
+        "-u")
+            echoRed "Uninstall"
+            platform
+            uninstallPowerline
+            uninstallVimrc
+            uninstallNeoBundle
             unconfShellRC
+            uninstallFont
+            echoRed "* * * * * * * * * * * * * * * * * * * * * * * * * * * *"
+            echoRed "* * * * * * * * PLEASE RESTART TERMINAL * * * * * * * *"
+            echoRed "* * * * * * * * * * * * * * * * * * * * * * * * * * * *"
+            echo ""
             ;;
         *)
-            echoYellow "default install: per user"
+            echoGreen "[Default Install]: per user"
             LOCAL_OR_GLOBAL="LOCAL"
             platform
-            localInstallPowerline
+            installPowerline
             installVimrc
+            installNeoBundle
             installFonts
             ;;
     esac
@@ -173,17 +174,17 @@ installVimrc() {
     if [ $? -eq 0 ]; then
         echoBlue "[$VIMRC]: Been installed before."
     else
-        echo "\" JKODRUM SECTION START `date +%Y%m%d\ %a.`" >> $VIMRC
-        echo "\" DO NOT EDIT THIS SECTION" >> $VIMRC
-        cat $JKOVIM_DIR/.vimrc >> $VIMRC
-        echo -e "\n\n\" {***** Powerline *****" >> $VIMRC
-        echo "set rtp+=$POWERLINE_PATH/vim/" >> $VIMRC
-        echo "\" }***** Powerline *****" >> $VIMRC
-        echo "\" JKODRUM SECTION END" >> $VIMRC
+        vimrcConf="\" JKODRUM SECTION START `date +%Y%m%d\ %a.`\n"
+        vimrcConf+="\" DO NOT EDIT THIS SECTION\n"
+        vimrcConf+="`cat $JKOVIM_DIR/.vimrc`"
+        vimrcConf+="\n\n\" {***** Powerline *****\n"
+        vimrcConf+="set runtimepath+=$POWERLINE_PATH/vim/\n"
+        vimrcConf+="\" }***** Powerline *****\n"
+        vimrcConf+="\" JKODRUM SECTION END"
+        vimrcConf=$(echo "$vimrcConf" | sed "s|$HOME|\$HOME|g")
+        echo -e "$vimrcConf" >> $VIMRC
         echoGreen "[$VIMRC]: Configured."
     fi
-
-    installNeoBundle
 }
 
 # TODO: global neobundle
@@ -205,11 +206,19 @@ uninstallVimrc() {
     echoRed "[$VIMRC]: Unconfigured!"
 }
 
-localUninstallPowerline() {
+uninstallNeoBundle() {
+    BUNDLE_DIR=~/.vim/bundle
+    if [ -e "$BUNDLE_DIR" ]; then
+        rm -rf $BUNDLE_DIR
+        echoRed "[NeoBundle]: Uninstall!"
+    fi
+}
+
+uninstallPowerline() {
     type pip >/dev/null 2>&1 \
     && (pip show -f powerline-status >/dev/null 2>&1 \
       && pip uninstall powerline-status -y >/dev/null 2>&1) \
-    && echo "powerline: Uninstalled."
+    && echoRed "powerline: Uninstalled."
     unconfShellRC
 }
 
