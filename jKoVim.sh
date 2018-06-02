@@ -30,26 +30,25 @@ JKOVIM_DIR="$( cd -P $( dirname $0 ) && pwd -P )"
 start() {
     #echo "arg: $*"
     LOCAL_OR_GLOBAL="LOCAL"
-    case $* in
-        "-g")
-            echo "install globally"
-            LOCAL_OR_GLOBAL="GLOBAL"
-            ;;
+    case $1 in
         "-t")
             echoGreen "Install test"
-            platform
-            installPowerline
-            confShellRC
-            installVimrc
-            installNeoBundle
+            #platform
+            #installPowerline
+            #confShellRC
+            #installVimrc
+            #installNeoBundle
             ;;
-        "-y")
-            echoRed "Uninstall test"
-            platform
-            uninstallFont
-            ;;
-        "-u")
-            echoRed "Uninstall"
+        "uninstall")
+            shift
+            if [ $# -ge 1 -a "${1:0:2}" == "-a" ]; then
+                echoRed "[Globally Uninstall]: system wide"
+                LOCAL_OR_GLOBAL="GLOBAL"
+            elif [ $# -eq 0 -o "${1:0:2}" == "-u" ]; then
+                echoRed "[Default Uninstall]: per user"
+            else
+                echoRed "\033[1munknown option \"$1\"."
+            fi
             platform
             uninstallPowerline
             uninstallVimrc
@@ -61,15 +60,29 @@ start() {
             echoRed "* * * * * * * * * * * * * * * * * * * * * * * * * * * *"
             echo ""
             ;;
-        *)
-            echoGreen "[Default Install]: per user"
-            LOCAL_OR_GLOBAL="LOCAL"
+        "install")
+            shift
+            if [ $# -ge 1 -a "${1:0:2}" == "-a" ]; then
+                echoGreen "[Globally Install]: system wide"
+                LOCAL_OR_GLOBAL="GLOBAL"
+            elif [ $# -eq 0 -o "${1:0:2}" == "-u" ]; then
+                echoGreen "[Default Install]: per user"
+            else
+                echoRed "unknown option \"$1\"."
+            fi
             platform
             installPowerline
             confShellRC
             installVimrc
             installNeoBundle
             installFonts
+            ;;
+        *)
+            echo -e "$0 install [\033[1moption$reset]"
+            echo -e "$0 uninstall [\033[1moption$reset]"
+            echo -e "\033[1mOption$reset"
+            echo "-a    install powerline and vimrc globally, system wide"
+            echo "-u    install powerline and vimrc locally, per user (default)"
             ;;
     esac
 }
