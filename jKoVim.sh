@@ -71,6 +71,7 @@ start() {
                 echoRed "unknown option \"$1\"."
             fi
             platform
+            installer
             installPowerline
             confShellRC
             installVimrc
@@ -130,7 +131,24 @@ platform() {
         *)
             echo "$OS, not supported"
     esac
-    echoGreen "[OS]: $OS"
+    if [ "$OS" == "Darwin" ]; then
+        echoGreen "[OS]: Mac OS X"
+    else
+        echoGreen "[OS]: $OS"
+    fi
+}
+
+installer() {
+    if [ "$OS" != "Darwin" ]; then return; fi
+    type brew >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echoGreen "[Homebrew]: Checked."
+        return;
+    fi
+    echoYellow "[Homebrew]: Installing..."
+    echo -e "\015" | /usr/bin/ruby -e "$(curl \
+    -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" \
+    || (echoRed "Fails to install Homebrew. Installer aborts."; exit -1)
 }
 
 checkVim() {
