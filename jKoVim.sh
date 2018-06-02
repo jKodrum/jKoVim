@@ -9,19 +9,19 @@
 # -u: uninstall powerline and vimrc
 
 
-red=`tput setaf 1`
-green=`tput setaf 2`
-yellow=`tput setaf 3`
-blue=`tput setaf 4`
-magenta=`tput setaf 5`
-cyan=`tput setaf 6`
-reset=`tput sgr0`
-echoGreen() { echo "${green}$*${reset}"; }
-echoRed() { echo "${red}$*${reset}"; }
-echoYellow() { echo "${yellow}$*${reset}"; }
-echoBlue() { echo "${blue}$*${reset}"; }
-echoMagenta() { echo "${magenta}$*${reset}"; }
-echoCyan() { echo "${cyan}$*${reset}"; }
+red='\033[31m'
+green='\033[32m'
+yellow='\033[33m'
+blue='\033[34m'
+magenta='\033[35m'
+cyan='\033[36m'
+reset='\033[m'
+echoGreen() { echo -e "${green}$*${reset}"; }
+echoRed() { echo -e "${red}$*${reset}"; }
+echoYellow() { echo -e "${yellow}$*${reset}"; }
+echoBlue() { echo -e "${blue}$*${reset}"; }
+echoMagenta() { echo -e "${magenta}$*${reset}"; }
+echoCyan() { echo -e "${cyan}$*${reset}"; }
 
 JKOVIM_DIR="$( cd -P $( dirname $0 ) && pwd -P )"
 
