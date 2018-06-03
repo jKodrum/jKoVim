@@ -196,6 +196,8 @@ confShellRC() {
     # Bash
     powerlineConf="# JKODRUM POWERLINE SECTION START `date +%Y%m%d\ %a.`\n"
     powerlineConf+="# DO NOT EDIT THIS SECTION\n"
+    powerlineConf+="export LC_LANG=en_US.UTF-8\n"
+    powerlineConf+="export LC_ALL=en_US.UTF-8\n"
     powerlineConf+="export PATH=\"$POWERLINE_BIN:\$PATH\"\n"
     powerlineConf+="if [ -f $POWERLINE_PATH/bash/powerline.sh ]; then\n"
     powerlineConf+="\tsource $POWERLINE_PATH/bash/powerline.sh\n"
