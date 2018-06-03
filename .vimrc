@@ -114,7 +114,7 @@ nnoremap <C-H> :tabN<cr>
 nnoremap <C-L> :tabn<cr>
 nnoremap <C-K> <c-w><
 nnoremap <C-J> <c-w>>
-nnoremap <C-T> :tabe
+nnoremap <C-T> :tabe 
 nnoremap <C-M> :w<cr>
 nnoremap <C-P> :cprev<cr>
 nnoremap <C-N> :cnext<cr>
