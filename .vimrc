@@ -6,6 +6,7 @@ se fencs=utf-8,big5,gbk,latin1,unicode,ansi
 " ucs-bom: unicode little endian
 " ucs-bom == utf-16le
 se fenc=utf-8
+se enc=utf-8
 " se filetype               " se ft
 " se termencoding=utf8      " se tenc
 " se encoding=prc           " se enc
@@ -16,10 +17,11 @@ se nu                       " se number
 se ts=4                     " se tabstop=4
 se sw=4                     " se shiftwidth=4
 " se wrap                   " automatic word wrapping
-se et                       " expandtab, tab substituted by spaces
+"se et                       " expandtab, tab substituted by spaces
 " se noet
 se hls                      " hlsearch
 se cul                      " cursorline
+"se cuc                     " cursorcolumn
 se ls=2                     " laststatus 0:never 1:show if multi-window 2:always
 se t_Co=256                 " if your terminal supports 256 colours
 " se cin                    " cindent
@@ -108,7 +110,7 @@ nnoremap <C-H> :tabN<cr>
 nnoremap <C-L> :tabn<cr>
 nnoremap <C-K> <c-w><
 nnoremap <C-J> <c-w>>
-nnoremap <C-T> :tabe 
+nnoremap <C-T> :tabe
 nnoremap <C-M> :w<cr>
 nnoremap <C-P> :cprev<cr>
 nnoremap <C-N> :cnext<cr>
@@ -119,7 +121,7 @@ nnoremap <c-_> *:vim /<c-r>// ##<cr>
 vnoremap // y/<c-r>"<cr>
 vnoremap /. y/\<<c-r>"\><cr>:vim /\<<c-r>\>/ ##<cr>
 vnoremap /, y/<c-r>"<cr>:vim /<c-r> /##<cr>
-cnoremap <c-_> args `find . -type f -not -path './.*/*' -name '*'   
+cnoremap <c-_> args `find . -type f -not -path './.*/*' -name '*'
 " Commands Notes
 " :tabo<cr>         " tabe only
 " :tabc<cr>         " tabe close
@@ -135,4 +137,13 @@ cnoremap <c-_> args `find . -type f -not -path './.*/*' -name '*'
 
 " {***** ColorScheme *****
 colorscheme wombat256
+"colorscheme newspaper
+"colorscheme blink
+"colorscheme coffee
+"colorscheme coldgreen
+"colorscheme ansi_blows
+"colorscheme ekvoli
+"colorscheme greenvision
+"colorscheme gryffin
+"colorscheme
 " }***** ColorScheme *****
