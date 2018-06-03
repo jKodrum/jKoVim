@@ -17,7 +17,7 @@ se nu                       " se number
 se ts=4                     " se tabstop=4
 se sw=4                     " se shiftwidth=4
 " se wrap                   " automatic word wrapping
-"se et                       " expandtab, tab substituted by spaces
+" se et                       " expandtab, tab substituted by spaces
 " se noet
 se hls                      " hlsearch
 se cul                      " cursorline
@@ -46,6 +46,10 @@ autocmd FileType javascript setl sw=4 ts=4
 autocmd FileType python setl sw=4 ts=4
 autocmd FileType ruby setl sw=2 ts=2
 autocmd FileType yaml setl sw=2 ts=2
+
+""highlight column over 80 in length
+"highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+"match OverLength /\%81v.\+/
 " }***** Basic Setting *****
 
 
