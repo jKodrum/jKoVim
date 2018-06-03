@@ -56,8 +56,8 @@ start() {
             fi
             platform
             unconfShellRC
-            uninstallPowerline
             uninstallVimrc
+            uninstallPowerline
             uninstallNeoBundle
             unconfShellRC
             uninstallFont
@@ -177,7 +177,7 @@ installPowerline() {
     fi
 
     # install powerline
-    $PIP list powerline-status | grep powerline >/dev/null
+    $PIP list powerline-status | grep powerline &>/dev/null
     if [ $? -eq 0 ]; then
         echoGreen "[powerline]: Checked."
     else
@@ -217,7 +217,7 @@ confShellRC() {
 
 installVimrc() {
     # checkVim
-    grep "JKODRUM SECTION" $VIMRC >/dev/null
+    grep "JKODRUM SECTION" $VIMRC &>/dev/null
     if [ $? -eq 0 ]; then
         echoCyan "[$VIMRC]: Been installed before."
     else
@@ -260,11 +260,16 @@ uninstallNeoBundle() {
 }
 
 uninstallPowerline() {
-    type pip >/dev/null 2>&1 \
-    && (pip show -f powerline-status >/dev/null 2>&1 \
-      && pip uninstall powerline-status -y >/dev/null 2>&1) \
-    && echoRed "[powerline]: Uninstalled."
-    unconfShellRC
+    type $PIP &>/dev/null
+    if [ $? -eq 0 ]; then
+        $PIP list | grep powerline-status &>/dev/null
+        if [ $? -eq 0 ]; then
+            $PIP uninstall powerline-status -y &>/dev/null \
+            && echoRed "[powerline]: Uninstalled."
+        else
+            echoRed "[powerline]: Already uninstalled."
+        fi
+    fi
 }
 
 unconfShellRC() {
