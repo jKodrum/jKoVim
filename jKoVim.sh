@@ -8,6 +8,9 @@
 # -a: install powerline and vimrc globally (system wide)
 # -u: uninstall powerline and vimrc
 
+INSTALLATION_OUTPUT_REDIRECT="/dev/stdout"
+#INSTALLATION_OUTPUT_REDIRECT="/dev/null"
+#INSTALLATION_OUTPUT_REDIRECT="-"
 
 red='\033[31m'
 green='\033[32m'
@@ -97,19 +100,23 @@ platform() {
             SED_CMD_PREFIX="sed -i ''"
             FONT_FILE="$HOME/Desktop/DejaVu_Sans_Mono.ttf"
             FONT_FILE="$HOME/Library/Fonts/DejaVu\ Sans\ Mono\ for\ Powerline.ttf"
+            PYTHON_PIP="python"
+            PIP="pip3"
             if [ $LOCAL_OR_GLOBAL == "GLOBAL" ]; then
                 VIMRC="/usr/share/vim/vimrc"
             elif [ $LOCAL_OR_GLOBAL == "LOCAL" ]; then
                 VIMRC="$HOME/.vimrc"
                 BASHRC="$HOME/.bash_profile"
-                POWERLINE_PATH="$HOME/Library/Python/2.7/lib/python/site-packages/powerline/bindings"
-                POWERLINE_BIN="$HOME/Library/Python/2.7/bin"
+                POWERLINE_PATH="$HOME/Library/Python/3.6/lib/python/site-packages/powerline/bindings"
+                POWERLINE_BIN="$HOME/Library/Python/3.6/bin"
             fi
             ;;
         "Linux")
             ESSENTIAL="git vim curl fontconfig"
             INSTALL_CMD="sudo apt-get install -y"
             SED_CMD_PREFIX="sed -i"
+            PYTHON_PIP="python-pip"
+            PIP="pip"
             OS=`uname -o`
             if [ $LOCAL_OR_GLOBAL == "GLOBAL" ]; then
                 VIMRC="/etc/vim/vimrc.local"
@@ -140,7 +147,7 @@ platform() {
 
 installer() {
     if [ "$OS" != "Darwin" ]; then return; fi
-    type brew >/dev/null 2>&1
+    type brew &>/dev/null
     if [ $? -eq 0 ]; then
         echoGreen "[Homebrew]: Checked."
         return;
@@ -148,6 +155,7 @@ installer() {
     echoYellow "[Homebrew]: Installing..."
     echo -e "\015" | /usr/bin/ruby -e "$(curl \
     -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" \
+    >$INSTALLATION_OUTPUT_REDIRECT \
     || (echoRed "Fails to install Homebrew. Installer aborts."; exit -1)
 }
 
@@ -157,29 +165,30 @@ checkVim() {
 
 installPowerline() {
     # install pip
-    type pip >/dev/null 2>&1 && echoGreen "[pip]: Checked."
-    type pip >/dev/null 2>&1 \
-        || (echoYellow "[pip]: Installing..." && $INSTALL_CMD python-pip)
-    #err=$((pip list >/dev/null) 2>&1)
-    ## if $err contains "upgrade"
-    #if [ "${err#*upgrade}" != "$err" ]; then
-    #    echoYellow "[pip]: Upgrading..." && pip install --upgrade pip >/dev/null 2>&1;
-    #fi
+    type $PIP &>/dev/null
+    if [ $? -eq 0 ]; then
+        echoGreen "[pip]: Checked."
+    else
+        echoYellow "[pip]: Installing..."
+        $INSTALL_CMD $PYTHON_PIP >$INSTALLATION_OUTPUT_REDIRECT
+    fi
 
     # install powerline
-    pip show -f powerline-status | grep powerline >/dev/null
-    # cannot use `grep --quiet` cuz `pip` does not handle
-    # SIGPIPE and will generates error
-    if [ $? -eq 0 ]; then echoGreen "[powerline]: Checked."
+    $PIP list powerline-status | grep powerline >/dev/null
+    if [ $? -eq 0 ]; then
+        echoGreen "[powerline]: Checked."
     else
         echoYellow "[powerline]: Installing..."
-        pip install --user powerline-status
+        $PIP install --user powerline-status >$INSTALLATION_OUTPUT_REDIRECT
+
+
         POWERLINE_CONFIG_FILE="$POWERLINE_PATH/../config_files/config.json"
         #SUBTITUTE_PATTERN='/shell/,/}/s/"theme": "default"/"theme": "default_leftonly"/'
         #SUBTITUTE_PATTERN="'/shell/,/}/s/\"theme\": \"default\"/\"theme\": \"default_leftonly\"/'"
         #$SED_CMD_PREFIX `echo $SUBTITUTE_PATTERN` $POWERLINE_CONFIG_FILE
         $SED_CMD_PREFIX '/shell/,/}/s/"theme": "default"/"theme": "default_leftonly"/' $POWERLINE_CONFIG_FILE
         echoGreen "[powerline/config.json]: Modified."
+
     fi
 }
 
