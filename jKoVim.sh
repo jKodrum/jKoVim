@@ -36,13 +36,26 @@ start() {
     #echo "arg: $*"
     LOCAL_OR_GLOBAL="LOCAL"
     case $1 in
-        "-t")
-            echoGreen "Install test"
-            #platform
-            #installPowerline
-            #confShellRC
-            #installVimrc
-            #installNeoBundle
+        "install")
+            shift
+            if [ $# -ge 1 -a "${1:0:2}" == "-a" ]; then
+                echo "[Globally Install]: system wide"
+                LOCAL_OR_GLOBAL="GLOBAL"
+            elif [ $# -eq 0 -o "${1:0:2}" == "-u" ]; then
+                echo "[Default Install]: per user"
+            else
+                echoRed "Unknown option \"$1\"."
+                exit -1
+            fi
+            platform
+            installer
+            installPowerline
+            confShellRC
+            installVimrc
+            installNeoBundle
+            installFonts
+            echo "Please restart your termianl or enter the command:"
+            echo -e "${bold}source $BASHRC${reset}"
             ;;
         "uninstall")
             shift
@@ -64,25 +77,6 @@ start() {
             echoRed "* * * * * * * * ${bold}PLEASE RESTART TERMINAL${reset}${red} * * * * * * * *"
             echoRed "* * * * * * * * * * * * * * * * * * * * * * * * * * * *"
             echo ""
-            ;;
-        "install")
-            shift
-            if [ $# -ge 1 -a "${1:0:2}" == "-a" ]; then
-                echo "[Globally Install]: system wide"
-                LOCAL_OR_GLOBAL="GLOBAL"
-            elif [ $# -eq 0 -o "${1:0:2}" == "-u" ]; then
-                echo "[Default Install]: per user"
-            else
-                echoRed "Unknown option \"$1\"."
-                exit -1
-            fi
-            platform
-            installer
-            installPowerline
-            confShellRC
-            installVimrc
-            installNeoBundle
-            installFonts
             ;;
         *)
             echo -e "$0 install [${bold}option$reset]"
