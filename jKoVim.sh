@@ -12,6 +12,7 @@ INSTALLATION_OUTPUT_REDIRECT="/dev/stdout"
 #INSTALLATION_OUTPUT_REDIRECT="/dev/null"
 #INSTALLATION_OUTPUT_REDIRECT="-"
 
+bold='\033[1m'
 red='\033[31m'
 green='\033[32m'
 yellow='\033[33m'
@@ -50,9 +51,10 @@ start() {
             elif [ $# -eq 0 -o "${1:0:2}" == "-u" ]; then
                 echoRed "[Default Uninstall]: per user"
             else
-                echoRed "\033[1munknown option \"$1\"."
+                echoRed "${bold}unknown option \"$1\"."
             fi
             platform
+            unconfShellRC
             uninstallPowerline
             uninstallVimrc
             uninstallNeoBundle
@@ -71,7 +73,8 @@ start() {
             elif [ $# -eq 0 -o "${1:0:2}" == "-u" ]; then
                 echo "[Default Install]: per user"
             else
-                echoRed "unknown option \"$1\"."
+                echoRed "Unknown option \"$1\"."
+                exit -1
             fi
             platform
             installer
@@ -82,9 +85,9 @@ start() {
             installFonts
             ;;
         *)
-            echo -e "$0 install [\033[1moption$reset]"
-            echo -e "$0 uninstall [\033[1moption$reset]"
-            echo -e "\033[1mOption$reset"
+            echo -e "$0 install [${bold}option$reset]"
+            echo -e "$0 uninstall [${bold}option$reset]"
+            echo -e "${bold}Option$reset"
             echo "-a    install powerline and vimrc globally, system wide"
             echo "-u    install powerline and vimrc locally, per user (default)"
             ;;
@@ -99,7 +102,6 @@ platform() {
             INSTALL_CMD="brew install"
             SED_CMD_PREFIX="sed -i ''"
             FONT_FILE="$HOME/Desktop/DejaVu_Sans_Mono.ttf"
-            FONT_FILE="$HOME/Library/Fonts/DejaVu\ Sans\ Mono\ for\ Powerline.ttf"
             PYTHON_PIP="python"
             PIP="pip3"
             if [ $LOCAL_OR_GLOBAL == "GLOBAL" ]; then
@@ -271,24 +273,32 @@ unconfShellRC() {
     echoRed "[$BASHRC]: Unconfigured!"
 }
 
-# TODO: check curl
+checkCurl() {
+    type curl &>/dev/null
+    if [ $? -ne 0 ]; then
+        $INSTALL_CMD curl >$INSTALLATION_OUTPUT_REDIRECT
+    fi
+}
+
 installFonts() {
     FONT_OTF_URL="https://github.com/Lokaltog/powerline/raw/develop/font/PowerlineSymbols.otf"
     FONT_CONF_URL="https://raw.githubusercontent.com/powerline/powerline/develop/font/10-powerline-symbols.conf"
 
     if [ -f "$FONT_FILE" ]; then
-        echoGreen "[font]: Checked."
+        echoGreen "[font]: $FONT_FILE exists."
     else
         echoYellow "[font]: Installing..."
+        checkCurl
         if [ $OS == "Darwin" ]; then
-            FONT_TTF_URL="https://github.com/powerline/fonts/raw/master/DejaVuSansMono/DejaVu%20Sans%20Mono%20for%20Powerline.ttf"
-            curl $FONT_TTF_URL > $FONT_FILE
-            echo "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"
-            echo "* Please install powerline font manually.                         *"
-            echo "* Double click \"DejaVu_Sans_Mono.ttf\" on Desktop to install.      *"
-            echo "* Open terminal preferences and select the font.                  *"
-            echo "* For more fonts, https://github.com/powerline/fonts              *"
-            echo "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"
+            FONT_TTF_URL="https://raw.githubusercontent.com/powerline/fonts/master/DejaVuSansMono/DejaVu%20Sans%20Mono%20for%20Powerline.ttf"
+            curl $FONT_TTF_URL > $FONT_FILE 2>/dev/null
+            echo "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"
+            echo "* Please install powerline font manually.                   *"
+            echo -ne "* Double click ${bold}DejaVu_Sans_Mono.ttf${reset} on "
+            echo "Desktop to install.  *"
+            echo "* Open terminal preferences and select the font.            *"
+            echo "* For more fonts, https://github.com/powerline/fonts        *"
+            echo "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"
         elif [ $OS == "GNU/Linux" ]; then
             mkdir -p $FONT_PATH && curl $FONT_OTF_URL > $FONT_FILE
             mkdir -p $FONT_CONFIG_PATH && curl $FONT_CONF_URL > $FONT_CONFIG_FILE
