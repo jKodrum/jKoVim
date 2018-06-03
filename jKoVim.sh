@@ -7,6 +7,7 @@
 # default: install powerline and vimrc locally
 # -a: install powerline and vimrc globally (system wide)
 # -u: uninstall powerline and vimrc
+# TODO: global installation
 
 INSTALLATION_OUTPUT_REDIRECT="/dev/stdout"
 #INSTALLATION_OUTPUT_REDIRECT="/dev/null"
@@ -233,14 +234,12 @@ installVimrc() {
     fi
 }
 
-# TODO: global neobundle
 installNeoBundle() {
-    # Install Shougo NeoBundle
     # curl https://raw.githubusercontent.com/Shougo/neobundle.vim/master/bin/install.sh | sh
     BUNDLE_DIR=~/.vim/bundle
     INSTALL_DIR="$BUNDLE_DIR/neobundle.vim"
     if [ -e "$INSTALL_DIR" ]; then
-        echoGreen "[NeoBundle]: Checked."
+        echoGreen "[NeoBundle]: $INSTALL_DIR exists."
     else
         echoYellow "[NeoBundle]: Installing..."
         git clone https://github.com/Shougo/neobundle.vim "$INSTALL_DIR"
