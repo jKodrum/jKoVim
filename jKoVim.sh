@@ -59,10 +59,9 @@ start() {
             uninstallVimrc
             uninstallPowerline
             uninstallNeoBundle
-            unconfShellRC
             uninstallFont
             echoRed "* * * * * * * * * * * * * * * * * * * * * * * * * * * *"
-            echoRed "* * * * * * * * PLEASE RESTART TERMINAL * * * * * * * *"
+            echoRed "* * * * * * * * ${bold}PLEASE RESTART TERMINAL${reset}${red} * * * * * * * *"
             echoRed "* * * * * * * * * * * * * * * * * * * * * * * * * * * *"
             echo ""
             ;;
