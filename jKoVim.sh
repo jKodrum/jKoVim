@@ -66,10 +66,10 @@ start() {
         "install")
             shift
             if [ $# -ge 1 -a "${1:0:2}" == "-a" ]; then
-                echoGreen "[Globally Install]: system wide"
+                echo "[Globally Install]: system wide"
                 LOCAL_OR_GLOBAL="GLOBAL"
             elif [ $# -eq 0 -o "${1:0:2}" == "-u" ]; then
-                echoGreen "[Default Install]: per user"
+                echo "[Default Install]: per user"
             else
                 echoRed "unknown option \"$1\"."
             fi
@@ -139,9 +139,9 @@ platform() {
             echo "$OS, not supported"
     esac
     if [ "$OS" == "Darwin" ]; then
-        echoGreen "[OS]: Mac OS X"
+        echo "[OS]: Mac OS X"
     else
-        echoGreen "[OS]: $OS"
+        echo "[OS]: $OS"
     fi
 }
 
@@ -204,7 +204,7 @@ confShellRC() {
     powerlineConf+="fi\n"
     powerlineConf+="# JKODRUM SECTION END"
     if $(grep --quiet "JKODRUM SECTION" $BASHRC); then
-        echoBlue "[$BASHRC]: Been configured before."
+        echoCyan "[$BASHRC]: Been configured before."
     else
         powerlineConf=$(echo $powerlineConf | sed "s|$HOME|\$HOME|g")
         echo -e "$powerlineConf" >> $BASHRC
@@ -212,12 +212,11 @@ confShellRC() {
     fi
 }
 
-# TODO: powerline for vim
 installVimrc() {
     # checkVim
     grep "JKODRUM SECTION" $VIMRC >/dev/null
     if [ $? -eq 0 ]; then
-        echoBlue "[$VIMRC]: Been installed before."
+        echoCyan "[$VIMRC]: Been installed before."
     else
         vimrcConf="\" JKODRUM SECTION START `date +%Y%m%d\ %a.`\n"
         vimrcConf+="\" DO NOT EDIT THIS SECTION\n"
