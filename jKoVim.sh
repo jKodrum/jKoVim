@@ -182,7 +182,12 @@ installPowerline() {
         #SUBTITUTE_PATTERN='/shell/,/}/s/"theme": "default"/"theme": "default_leftonly"/'
         #SUBTITUTE_PATTERN="'/shell/,/}/s/\"theme\": \"default\"/\"theme\": \"default_leftonly\"/'"
         #$SED_CMD_PREFIX `echo $SUBTITUTE_PATTERN` $POWERLINE_CONFIG_FILE
-        $SED_CMD_PREFIX '/shell/,/}/s/"theme": "default"/"theme": "default_leftonly"/' $POWERLINE_CONFIG_FILE
+        #$SED_CMD_PREFIX '/shell/,/}/s/"theme": "default"/"theme": "default_leftonly"/' $POWERLINE_CONFIG_FILE
+		if [ "$OS" == "Darwin" ]; then
+			sed -i '' '/shell/,/}/s/"theme": "default"/"theme": "default_leftonly"/' $POWERLINE_CONFIG_FILE
+		else
+			sed -i '/shell/,/}/s/"theme": "default"/"theme": "default_leftonly"/' $POWERLINE_CONFIG_FILE
+		fi
         echoGreen "[powerline/config.json]: Modified."
 
     fi
@@ -240,7 +245,12 @@ installNeoBundle() {
 }
 
 uninstallVimrc() {
-    $SED_CMD_PREFIX '/JKODRUM/,/JKODRUM/d' $VIMRC
+    #$SED_CMD_PREFIX '/JKODRUM/,/JKODRUM/d' $VIMRC
+	if [ "$OS" == "Darwin" ]; then
+		sed -i '' '/JKODRUM/,/JKODRUM/d' $VIMRC
+	else
+		sed -i '/JKODRUM/,/JKODRUM/d' $VIMRC
+	fi
     echoRed "[$VIMRC]: Unconfigured!"
 }
 
@@ -266,7 +276,12 @@ uninstallPowerline() {
 }
 
 unconfShellRC() {
-    $SED_CMD_PREFIX '/JKODRUM/,/JKODRUM/d' $BASHRC
+    #$SED_CMD_PREFIX '/JKODRUM/,/JKODRUM/d' $BASHRC
+	if [ "$OS" == "Darwin" ]; then
+		sed -i '' '/JKODRUM/,/JKODRUM/d' $BASHRC
+	else
+		sed -i '/JKODRUM/,/JKODRUM/d' $BASHRC
+	fi
     echoRed "[$BASHRC]: Unconfigured!"
 }
 
