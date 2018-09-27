@@ -13,7 +13,7 @@ Have been tested:
 * macOS Sierra 10.12.6
 
 **NOTE**: This script install powerline locally (per user).  
-The globally installation isn't fully implemented yes.
+The globally installation isn't fully implemented yet.
 
 # Install
 ```
