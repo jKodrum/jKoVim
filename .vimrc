@@ -79,8 +79,9 @@ NeoBundle 'flazz/vim-colorschemes'
 NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'Tagbar'
 "NeoBundle 'vim-scripts/cscope.vim'
-"NeoBundle 'simplyzhao/cscope_maps.vim'
+NeoBundle 'simplyzhao/cscope_maps.vim'
 "NeoBundle 'vim-scripts/fakeclip'
+set cscopequickfix=g-,s-,c-,d-,i-,t-,e-,f-
 
 " You can specify revision/branch/tag.
 " NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
@@ -112,8 +113,13 @@ nnoremap <F9> :TagbarToggle<cr>
 "nnoremap <F10> :%!xxd<cr>
 nnoremap <C-H> :tabN<cr>
 nnoremap <C-L> :tabn<cr>
-nnoremap <C-K> <c-w><
-nnoremap <C-J> <c-w>>
+nnoremap <C-K> :tabn
+"nnoremap <C-K> <c-w><
+"nnoremap <C-J> <c-w>>
+nnoremap  :cs find
+nnoremap  vawy:cs find g ^R"<cr>
+nnoremap  vawy:cs find s ^R"<cr>
+nnoremap <C-J> <cr>
 nnoremap <C-T> :tabe 
 nnoremap <C-M> :w<cr>
 nnoremap <C-P> :cprev<cr>
@@ -121,11 +127,12 @@ nnoremap <C-N> :cnext<cr>
 nnoremap [q :cfirst<cr>
 nnoremap ]q :clast<cr>
 " CTRL-SLASH is registered as <c-_>
-nnoremap <c-_> *:vim /<c-r>// ##<cr>
+"nnoremap <c-_> *:vim /<c-r>// ##<cr>
 vnoremap // y/<c-r>"<cr>
 vnoremap /. y/\<<c-r>"\><cr>:vim /\<<c-r>\>/ ##<cr>
 vnoremap /, y/<c-r>"<cr>:vim /<c-r> /##<cr>
-cnoremap <c-_> args `find . -type f -not -path './.*/*' -name '*'
+"cnoremap <c-_> args `find . -type f -not -path './.*/*' -name '*'
+cnoremap <c-_> args `find . -type f -name '*.cpp' -o -name '*.h' -o -name '*.tpp'`
 " Commands Notes
 " :tabo<cr>         " tabe only
 " :tabc<cr>         " tabe close
