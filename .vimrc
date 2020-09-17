@@ -77,6 +77,8 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 " Add or remove your Bundles here:
 NeoBundle 'flazz/vim-colorschemes'
 NeoBundle 'scrooloose/nerdtree'
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'junegunn/gv.vim'
 NeoBundle 'Tagbar'
 "NeoBundle 'vim-scripts/cscope.vim'
 NeoBundle 'simplyzhao/cscope_maps.vim'
@@ -106,6 +108,7 @@ nnoremap <F2> :se paste! paste?<cr>
 nnoremap <F4> :echo expand('%:p')<cr>
 nnoremap <F5> :so $MYVIMRC<cr>
 nnoremap <F6> :tabe $MYVIMRC<cr>
+nnoremap <F7> :tab split<cr>
 "nnoremap <F7> :%!xxd -r<cr>
 nnoremap <F8> :NERDTreeToggle<cr>
 " let g:NERDTreeWinPos = "right"
@@ -116,9 +119,9 @@ nnoremap <C-L> :tabn<cr>
 nnoremap <C-K> :tabn
 "nnoremap <C-K> <c-w><
 "nnoremap <C-J> <c-w>>
-nnoremap  :cs find
-nnoremap  vawy:cs find g ^R"<cr>
-nnoremap  vawy:cs find s ^R"<cr>
+nnoremap  :cs find 
+nnoremap  vawy:cs find g "<cr>
+nnoremap  vawy:cs find s "<cr>
 nnoremap <C-J> <cr>
 nnoremap <C-T> :tabe 
 nnoremap <C-M> :w<cr>
@@ -132,7 +135,9 @@ vnoremap // y/<c-r>"<cr>
 vnoremap /. y/\<<c-r>"\><cr>:vim /\<<c-r>\>/ ##<cr>
 vnoremap /, y/<c-r>"<cr>:vim /<c-r> /##<cr>
 "cnoremap <c-_> args `find . -type f -not -path './.*/*' -name '*'
-cnoremap <c-_> args `find . -type f -name '*.cpp' -o -name '*.h' -o -name '*.tpp'`
+cnoremap <c-_> args `find . -type f -name "[Mm]akefile*" -o -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.tpp' -o -name '*.go'`
+
+command Blame ! git blame %
 " Commands Notes
 " :tabo<cr>         " tabe only
 " :tabc<cr>         " tabe close
